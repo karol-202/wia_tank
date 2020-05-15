@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="wia_tank">
+    <output-path>/srv/http/dev/wia/Klasa3/wia_tank/build/libs</output-path>
+    <root id="archive" name="wia_tank.jar">
+      <element id="module-output" name="Klasa3.wia_tank.main" />
+    </root>
+  </artifact>
+</component>
