@@ -15,25 +15,38 @@ import kotlin.browser.document
 
 private val canvas = document.body!!.append.canvas { }
 
-fun main() = startOnCanvas(canvas, renderInterval = 20, physicsInterval = 20) { app() }
+fun main() = startOnCanvas(canvas, renderInterval = 20, physicsInterval = 20) { app(size = canvas.size) }
 
-class App(props: BasicProps) : WCAbstractComponent<BasicProps>(props),
+class App(props: Props) : WCAbstractComponent<App.Props>(props),
                                UStateful<App.State>
 {
+    data class Props(override val key: Any,
+                     val size: Vector) : UProps
+
     data class State(val targetPosition: Vector,
                      val initialTankPosition: Vector,
                      val initialTankDirection: Vector) : UState
 
-    override var state by state(State(targetPosition = Vector.randomFraction() * canvas.size,
-                                      initialTankPosition = Vector.randomFraction() * canvas.size,
-                                      initialTankDirection = Vector.randomDirection()))
+    override var state by state(createRandomState())
+
+    private fun createRandomState() = State(targetPosition = Vector.randomFraction() * props.size,
+                                            initialTankPosition = Vector.randomFraction() * props.size,
+                                            initialTankDirection = Vector.randomDirection())
 
     override fun URenderBuilder<WC>.render()
     {
-        + game(targetPosition = state.targetPosition,
+        + game(size = props.size,
+               targetPosition = state.targetPosition,
                initialTankPosition = state.initialTankPosition,
-               initialTankDirection = state.initialTankDirection)
+               initialTankDirection = state.initialTankDirection,
+               onGameEnd = ::onGameEnd)
+    }
+
+    private fun onGameEnd()
+    {
+        state = createRandomState()
     }
 }
 
-fun WCRenderScope.app(key: Any = AutoKey) = component(::App, BasicProps(key))
+fun WCRenderScope.app(key: Any = AutoKey,
+                      size: Vector) = component(::App, App.Props(key, size))
